@@ -3,29 +3,25 @@
 #include <string.h>
 #include "cache.h"
 
-char* alp_strdup(const char* s) {
-    
+char* strdup(const char* s) {
     char* new_str = malloc(strlen(s) + 1);
-    
+
     if (new_str) {
         strcpy(new_str, s);
     }
-    
     return new_str;
 }
 
-
 Cache* createCache() {
     
-    int n;
     int i;
+    int n;
     char line[256];
-    char* toky;
+    char* token;
 
     Cache* cache = (Cache*) malloc(sizeof(Cache));
 
     if (cache == NULL) {
-        
         exit(1);
     }
 
@@ -37,33 +33,32 @@ Cache* createCache() {
     cache->tail = NULL;
 
     for (i = 0; i < n; i++) {
-    
+
         CacheNode* node = (CacheNode*) malloc(sizeof(CacheNode));
         fgets(line, sizeof(line), stdin);
-        toky = (char *) malloc(sizeof(char) * 250);
-        toky = strtok(line, " ");
+        token = (char *) malloc(sizeof(char) * 250);
+        token = strtok(line, " ");
 
         if (node == NULL) {
             
             exit(1);
         }
 
-        node->media.name = alp_strdup(toky);
-        toky = strtok(NULL, " ");
-        node->media.size = atoi(toky);
+        node->media.name = strdup(token);
+        token = strtok(NULL, " ");
+        node->media.size = atoi(token);
         cache->currentSize += node->media.size;
 
         node->domainFreqList = (DomainFreqList*) malloc(sizeof(DomainFreqList));
     
         if (node->domainFreqList == NULL) {
-            
             exit(1);
         }
 
         node->domainFreqList->head = NULL;
         node->domainFreqList->tail = NULL;
 
-        while ((toky = strtok(NULL, " ")) != NULL) {
+        while ((token = strtok(NULL, " ")) != NULL) {
             
             DomainFreqNode* dnsNode = (DomainFreqNode*) malloc(sizeof(DomainFreqNode));
 
@@ -71,13 +66,12 @@ Cache* createCache() {
             DomainFreqNode* previous = NULL;            
             
             if (dnsNode == NULL) {
-                
                 exit(1);
             }
 
-            dnsNode->name = alp_strdup(toky);
-            toky = strtok(NULL, " ");
-            dnsNode->freq = atoi(toky);
+            dnsNode->name = strdup(token);
+            token = strtok(NULL, " ");
+            dnsNode->freq = atoi(token);
         
             while (current != NULL && (current->freq > dnsNode->freq || (current->freq == dnsNode->freq && strcmp(current->name, dnsNode->name) < 0))) {
                 previous = current;
@@ -86,12 +80,12 @@ Cache* createCache() {
             
             dnsNode->prev = previous;
             dnsNode->next = current;
+            
             if (previous != NULL) {
                 previous->next = dnsNode;
             } 
 
             else {
-            
                 node->domainFreqList->head = dnsNode;
             }
             
@@ -100,7 +94,6 @@ Cache* createCache() {
             } 
             
             else {
-            
                 node->domainFreqList->tail = dnsNode;
             }
         }
@@ -109,12 +102,10 @@ Cache* createCache() {
         node->next = NULL;
 
         if (cache->head == NULL) {
-            
             cache->head = node;
         } 
         
         else {
-        
             cache->tail->next = node;
         }
 
@@ -126,11 +117,9 @@ Cache* createCache() {
 
 
 void printCache(Cache* cache) {
-    
     CacheNode* node = cache->head;
     
     if (cache->head == NULL) {
-    
         printf("The Cache is Empty\n");
         return;
     
@@ -164,35 +153,32 @@ void printCache(Cache* cache) {
 
 
 CacheNode* addMediaRequest(Cache* cache, Media media, char* domain) {
-    
+
     CacheNode* node = findMedia(cache, media.name);
 
     if (node != NULL) {
-
         DomainFreqNode* dnsNode = node->domainFreqList->head;
 
     while (dnsNode != NULL) {
-        
+    
         DomainFreqNode* current;
         
         if (strcmp(dnsNode->name, domain) == 0) {
             dnsNode->freq++;
-
 
             if (dnsNode->prev != NULL) {
                 dnsNode->prev->next = dnsNode->next;
             } 
             
             else {
-
                 node->domainFreqList->head = dnsNode->next;
             }
+
             if (dnsNode->next != NULL) {
                 dnsNode->next->prev = dnsNode->prev;
             } 
             
             else {
-
                 node->domainFreqList->tail = dnsNode->prev;
             }
 
@@ -235,16 +221,13 @@ CacheNode* addMediaRequest(Cache* cache, Media media, char* domain) {
     }       
 
         if (dnsNode == NULL) {
-
-        
             dnsNode = (DomainFreqNode*) malloc(sizeof(DomainFreqNode));
         
             if (dnsNode == NULL) {
-                
                 exit(1);
             }
         
-            dnsNode->name = alp_strdup(domain);
+            dnsNode->name = strdup(domain);
             dnsNode->freq = 1;
             dnsNode->prev = NULL;
             dnsNode->next = NULL;
@@ -259,9 +242,11 @@ CacheNode* addMediaRequest(Cache* cache, Media media, char* domain) {
             else {
 
                 DomainFreqNode* current = node->domainFreqList->head;
+                
                 while (current != NULL && (current->freq > dnsNode->freq || (current->freq == dnsNode->freq && strcmp(current->name, dnsNode->name) < 0))) {
                     current = current->next;
                 }
+
                 if (current == NULL) {
 
                     dnsNode->prev = node->domainFreqList->tail;
@@ -311,7 +296,6 @@ CacheNode* addMediaRequest(Cache* cache, Media media, char* domain) {
             cache->head = node;
 
         }
-
     } 
     
     else {
@@ -320,28 +304,25 @@ CacheNode* addMediaRequest(Cache* cache, Media media, char* domain) {
         node = (CacheNode*) malloc(sizeof(CacheNode));
         
         if (node == NULL) {
-            
             exit(1);
         }
         
-        node->media.name = alp_strdup(media.name);
+        node->media.name = strdup(media.name);
         node->media.size = media.size;
         node->domainFreqList = (DomainFreqList*) malloc(sizeof(DomainFreqList));
         
         if (node->domainFreqList == NULL) {
-            
             exit(1);
         }
         
         node->domainFreqList->head = NULL;
         node->domainFreqList->tail = NULL;
         
-        if (dnsNode == NULL) {
-            
+        if (dnsNode == NULL) { 
             exit(1);
         }
         
-        dnsNode->name = alp_strdup(domain);
+        dnsNode->name = strdup(domain);
         dnsNode->freq = 1;
         dnsNode->prev = NULL;
         dnsNode->next = NULL;
@@ -352,18 +333,18 @@ CacheNode* addMediaRequest(Cache* cache, Media media, char* domain) {
         
         while (cache->currentSize + node->media.size > cache->cacheLimit) {
             
-            CacheNode* son_node = cache->tail;
+            CacheNode* last_node = cache->tail;
             
-            if(son_node == NULL){
+            if(last_node == NULL){
                 break;
             }            
             
-            cache->tail = son_node->prev;
+            cache->tail = last_node->prev;
         
             if (cache->tail != NULL) {
                 
                 cache->tail->next = NULL;
-            	cache->currentSize -= son_node->media.size;
+            	cache->currentSize -= last_node->media.size;
             	cache->mediaCount--; 	
             	
             }
@@ -371,7 +352,7 @@ CacheNode* addMediaRequest(Cache* cache, Media media, char* domain) {
             else{
                 
                 cache->head = NULL;
-                cache->currentSize -= son_node->media.size;
+                cache->currentSize -= last_node->media.size;
             	cache->mediaCount--;
                 
             }
@@ -476,5 +457,4 @@ void deleteMedia(Cache* cache, char* name) {
         node = node->next;
     }
 }
-
 
