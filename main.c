@@ -17,7 +17,7 @@ int main(int argc, char** argv)
     media1.name = "newVideo";
     media1.size = 300;
 
-    addMediaRequest(cache, media1, "tr");
+    addMediaRequest(cache, media1, "uk");
 
     deleteMedia(cache, "video2");
 
