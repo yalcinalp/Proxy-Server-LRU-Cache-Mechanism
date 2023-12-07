@@ -151,16 +151,14 @@ void printCache(Cache* cache) {
 }
 
 
-
 CacheNode* addMediaRequest(Cache* cache, Media media, char* domain) {
-
+    
     CacheNode* node = findMedia(cache, media.name);
 
     if (node != NULL) {
         DomainFreqNode* dnsNode = node->domainFreqList->head;
 
     while (dnsNode != NULL) {
-    
         DomainFreqNode* current;
         
         if (strcmp(dnsNode->name, domain) == 0) {
@@ -181,7 +179,6 @@ CacheNode* addMediaRequest(Cache* cache, Media media, char* domain) {
             else {
                 node->domainFreqList->tail = dnsNode->prev;
             }
-
 
             current = node->domainFreqList->head;
             
@@ -240,7 +237,7 @@ CacheNode* addMediaRequest(Cache* cache, Media media, char* domain) {
             } 
             
             else {
-
+                
                 DomainFreqNode* current = node->domainFreqList->head;
                 
                 while (current != NULL && (current->freq > dnsNode->freq || (current->freq == dnsNode->freq && strcmp(current->name, dnsNode->name) < 0))) {
@@ -272,7 +269,7 @@ CacheNode* addMediaRequest(Cache* cache, Media media, char* domain) {
         }
 
         if(cache->head == node){
-
+            // Do nothing
         }
 
         else{
@@ -401,7 +398,6 @@ CacheNode* findMedia(Cache* cache, char* name) {
 }
 
 
-
 void deleteMedia(Cache* cache, char* name) {
     
     CacheNode* node = cache->head;
@@ -416,7 +412,6 @@ void deleteMedia(Cache* cache, char* name) {
             } 
             
             else {
-
                 cache->head = node->next;
             }
             
@@ -425,7 +420,6 @@ void deleteMedia(Cache* cache, char* name) {
             } 
             
             else {
-            
                 cache->tail = node->prev;
             }
 
@@ -448,7 +442,6 @@ void deleteMedia(Cache* cache, char* name) {
             
             free(node->domainFreqList);
             free(node->media.name);
-
             free(node);
 
             return;
@@ -457,4 +450,3 @@ void deleteMedia(Cache* cache, char* name) {
         node = node->next;
     }
 }
-
